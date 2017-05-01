@@ -25,5 +25,16 @@
   "bugs": {
     "url": "https://github.com/midyan/free-math/issues"
   },
-  "homepage": "https://github.com/midyan/free-math#readme"
+  "homepage": "https://github.com/midyan/free-math#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0"
+  },
+  "dependencies": {
+    "async": "^2.4.0",
+    "express": "^4.15.2",
+    "fs": "0.0.1-security",
+    "mongoose": "^4.9.7",
+    "tesseract-wrapper": "^1.1.1"
+  }
 }
