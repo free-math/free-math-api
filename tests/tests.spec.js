@@ -2,6 +2,7 @@ const chai = require('chai')
 const path = require('path')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
+
 const ocr = mainFile.ocr
 const math = mainFile.math
 const user = mainFile.user
@@ -63,6 +64,52 @@ describe('Testing Lib OCR module', () => {
           expect(err.message).to.be.equal('Parameter must be a string')
           done()
         })
+    })
+  })
+})
+
+describe('Testing Lib Math Module', () => {
+  describe('the functionalities of the getExpType method', () => {
+    it('should be a function', function(done) {
+      expect(typeof math.getExpType).to.be.equal('function')
+      done()
+    })
+    it('should return normalized equation', function(done) {
+      math
+      .getExpType('x^2-7x+3=0')
+      .then(result => {
+        expect(result).to.be.an('object')
+        expect(result).to.have.property('expression').equal('x ^ 2 - 7 * x + 3 = 0')
+        expect(result).to.have.property('equation').equal(true)
+        done()
+      })
+      .catch(err => {
+        done(err)
+      })
+    })
+    it('should return parameter error', function(done) {
+      math
+      .getExpType()
+      .then(result => {
+        done(result)
+      })
+      .catch(err => {
+        expect(err).to.be.an('object')
+        expect(err.message).to.be.equal('Please provide a parameter')
+        done()
+      })
+    })
+    it('should return type error', function(done) {
+      math
+      .getExpType(123)
+      .then(result => {
+        done(result)
+      })
+      .catch(err => {
+        expect(err).to.be.an('object')
+        expect(err.message).to.be.equal('Parameter must be a string')
+        done()
+      })
     })
   })
 })
