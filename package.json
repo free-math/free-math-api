@@ -1,0 +1,29 @@
+{
+  "name": "free-math",
+  "version": "1.0.0",
+  "description": "Mathmatics made easy!",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha tests/tests.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/midyan/free-math.git"
+  },
+  "keywords": [
+    "math",
+    "solution",
+    "ocr",
+    "equation",
+    "wolfram",
+    "expression",
+    "eval",
+    "node"
+  ],
+  "author": "Yan Nunes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/midyan/free-math/issues"
+  },
+  "homepage": "https://github.com/midyan/free-math#readme"
+}
