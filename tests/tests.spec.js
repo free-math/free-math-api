@@ -112,4 +112,24 @@ describe('Testing Lib Math Module', () => {
       })
     })
   })
+  describe('the functionalities of the mathJsSolve method', () => {
+    it('should be a function', function(done) {
+      expect(typeof math.mathJsSolve).to.be.equal('function')
+      done()
+    })
+    it('should return result fron expression array', function(done) {
+      math
+      .mathJsSolve(['sqrt(9)', '123+77'])
+      .then(result => {
+        expect(result).to.be.an('array')
+        expect(result[0].solution).to.be.equal(3)
+        expect(result[1].solution).to.be.equal(200)
+        done()
+      })
+      .catch(err => {
+        done(err)
+      })
+    })
+
+  })
 })
