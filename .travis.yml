@@ -2,6 +2,11 @@ language: node_js
 node_js:
   - "7"
 
+# Branch
+branches:
+  only:
+  - master
+
 #Install NPM dependencies
 before_script: npm install
 
