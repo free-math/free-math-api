@@ -3,7 +3,6 @@ const path = require('path')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
 
-const config = require('../lib/private.config.js')
 const mongoose = mainFile.math.db
 
 const ocr = mainFile.ocr
@@ -129,6 +128,59 @@ describe('Testing Lib Math Module', () => {
         expect(err).to.be.an('object')
         expect(err.message).to.be.equal('Parameter must be a string')
         done()
+      })
+    })
+  })
+  describe('the functionalities of the mathJsSolve method', () => {
+    it('should be a function', function(done) {
+      expect(typeof math.mathJsSolve).to.be.equal('function')
+      done()
+    })
+    it('should return result from expression array', function(done) {
+      math
+      .mathJsSolve(['sqrt(9)', '123+77'])
+      .then(result => {
+        expect(result).to.be.an('array')
+        expect(result[0].solution).to.be.equal(3)
+        expect(result[1].solution).to.be.equal(200)
+        done()
+      })
+      .catch(err => {
+        done(err)
+      })
+    })
+    it('should return parameter error', function(done) {
+      math
+      .mathJsSolve()
+      .then(result => {
+        done(expect(result).to.not.be.ok)
+      })
+      .catch(err => {
+        var mErr = null
+        try {
+          expect(err).to.be.an('object')
+          expect(err.message).to.be.equal('Please provide a parameter')
+        } catch(error) {
+          mErr = error
+        }
+        done(mErr)
+      })
+    })
+    it('should return array error', function(done) {
+      math
+      .mathJsSolve([])
+      .then(result => {
+        done(expect(result).to.not.be.ok)
+      })
+      .catch(err => {
+        var mErr = null
+        try {
+          expect(err).to.be.an('object')
+          expect(err.message).to.be.equal('Expression array is empty!')
+        } catch(error) {
+          mErr = error
+        }
+        done(mErr)
       })
     })
   })
