@@ -7,6 +7,10 @@ branches:
   only:
   - master
 
+#Services
+services:
+  - mongodb
+
 #Install NPM dependencies
 before_script: npm install
 
