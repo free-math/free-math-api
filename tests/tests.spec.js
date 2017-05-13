@@ -3,18 +3,37 @@ const path = require('path')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
 
+const config = require('../lib/private.config.js')
+const mongoose = mainFile.math.db
+
 const ocr = mainFile.ocr
 const math = mainFile.math
 const user = mainFile.user
 const api = mainFile.api
 
 var expect = chai.expect
+var dbStatus = 0
+
+describe('Mongoose connection', () => {
+  it('should connect without error', function(done) {
+    this.timeout(5000)
+    var arg = null
+    dbStatus = mongoose.connection.readyState
+    try {
+      expect(dbStatus).to.be.equal(1)
+    } catch(err) {
+      arg = err
+    }
+    done(arg)
+  })
+})
 
 describe('First build and test', () => {
   it('should built without error', function (done) {
     console.log('built without error')
     done()
   })
+
 })
 
 describe('Testing Lib OCR module', () => {
@@ -68,6 +87,7 @@ describe('Testing Lib OCR module', () => {
   })
 })
 
+
 describe('Testing Lib Math Module', () => {
   describe('the functionalities of the getExpType method', () => {
     it('should be a function', function(done) {
@@ -117,7 +137,7 @@ describe('Testing Lib Math Module', () => {
       expect(typeof math.mathJsSolve).to.be.equal('function')
       done()
     })
-    it('should return result fron expression array', function(done) {
+    it('should return result from expression array', function(done) {
       math
       .mathJsSolve(['sqrt(9)', '123+77'])
       .then(result => {
@@ -130,6 +150,39 @@ describe('Testing Lib Math Module', () => {
         done(err)
       })
     })
-
+    it('should return parameter error', function(done) {
+      math
+      .mathJsSolve()
+      .then(result => {
+        done(expect(result).to.not.be.ok)
+      })
+      .catch(err => {
+        var mErr = null
+        try {
+          expect(err).to.be.an('object')
+          expect(err.message).to.be.equal('Please provide a parameter')
+        } catch(error) {
+          mErr = error
+        }
+        done(mErr)
+      })
+    })
+    it('should return array error', function(done) {
+      math
+      .mathJsSolve([])
+      .then(result => {
+        done(expect(result).to.not.be.ok)
+      })
+      .catch(err => {
+        var mErr = null
+        try {
+          expect(err).to.be.an('object')
+          expect(err.message).to.be.equal('Expression array is empty!')
+        } catch(error) {
+          mErr = error
+        }
+        done(mErr)
+      })
+    })
   })
 })
