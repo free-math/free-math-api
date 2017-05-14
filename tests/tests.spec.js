@@ -233,23 +233,22 @@ describe('Testing Lib Math Module', () => {
       })
     })
     it('should return expression error index 1', function(done) {
-      math
-        .mathJsSolve(['2+3', {}])
-          .then(result => {
-            var err = null
-            try {
-              expect(result.hasExpressionError).to.be.ok
-              expect(result).to.be.an('array')
-              expect(result[1]).to.have.property('error')
-              expect(result[1].error).to.be.an('error')
-            } catch(error) {
-              err = error
-            }
-            done(err)
-          })
-          .catch(err => {
-            done()
-          })
+      math.mathJsSolve(['2+3', {}])
+        .then(result => {
+          var err = null
+          try {
+            expect(result.hasExpressionError).to.be.ok
+            expect(result).to.be.an('array')
+            expect(result[1]).to.have.property('error')
+            expect(result[1].error).to.be.an('error')
+          } catch(error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => {
+          done(expect(err).to.be.ok)
+        })
     })
   })
   describe('the functionalities of the wolframCall method', () => {
@@ -262,6 +261,19 @@ describe('Testing Lib Math Module', () => {
       }
       done(err)
     })
-    // it('should return wolfram result', functio)
+    it('should return wolfram result', function(done) {
+      math.wolframCall('7x+2 = 12')
+        .then(result => {
+          var err = null
+          try {
+          } catch(error) {
+            err = error
+          }
+          // done(err)
+        })
+        .catch(err => {
+          // done(expect(err).to.be.ok)
+        })
+    })
   })
 })
