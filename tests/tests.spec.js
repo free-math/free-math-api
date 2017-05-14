@@ -17,13 +17,15 @@ describe('Mongoose connection', () => {
   it('should connect without error', function(done) {
     this.timeout(5000)
     var arg = null
-    dbStatus = mongoose.connection.readyState
-    try {
-      expect(dbStatus).to.be.equal(1)
-    } catch(err) {
-      arg = err
-    }
-    done(arg)
+    setTimeout(() =>{
+      dbStatus = mongoose.connection.readyState
+      try {
+        expect(dbStatus).to.be.equal(1)
+      } catch(err) {
+        arg = err
+      }
+      done(arg)
+    }, 1000)
   })
 })
 
@@ -260,5 +262,6 @@ describe('Testing Lib Math Module', () => {
       }
       done(err)
     })
+    // it('should return wolfram result', functio)
   })
 })
