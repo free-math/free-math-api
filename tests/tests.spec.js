@@ -256,7 +256,6 @@ describe('Testing Lib Math Module', () => {
     })
   })
   describe('the functionalities of the wolframCall method', () => {
-
     it('should be a function', function(done) {
       var err = null
       try {
@@ -346,6 +345,17 @@ describe('Testing Lib Math Module', () => {
         .catch(err => {
           done(err)
         })
+    })
+  })
+  describe('the functionalities of the evaluate method',() => {
+    it('should be a function', function(done) {
+      var err = null
+      try {
+        expect(typeof math.evaluate).to.be.equal('function')
+      } catch(error) {
+        err = error
+      }
+      done(err)
     })
   })
 })
