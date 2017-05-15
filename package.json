@@ -28,7 +28,7 @@
   "homepage": "https://github.com/midyan/free-math#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.1",
     "nock": "^9.0.13"
   },
   "dependencies": {
