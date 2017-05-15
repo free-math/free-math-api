@@ -127,9 +127,10 @@ describe('Testing Lib Math Module', () => {
       .then(result => {
         var err = null
         try {
+          console.log(result)
           expect(result).to.be.an('object')
           expect(result).to.have.property('expression').equal('x ^ 2 - 7 * x + 3 = 0')
-          expect(result).to.have.property('equation').equal(true)
+          expect(result).to.have.property('isEq').equal(true)
         } catch(error) {
           err = error
         }
@@ -356,6 +357,29 @@ describe('Testing Lib Math Module', () => {
         err = error
       }
       done(err)
+    })
+    it('should return mathjs result', function(done) {
+      const args = {
+        user: '68301f4aef1facb568301f4a',
+        query: 'sqrt(49) + 3'
+      }
+      math
+        .evaluate(args)
+        .then(result => {
+          var err = null
+          try {
+            // console.log(result)
+            expect(result.solveType).to.be.equal('mathjs')
+            expect(result.simplified).to.be.equal('10')
+            expect(result.solution).to.be.equal(10)
+            expect(result.error).to.be.null
+            expect(result.expression).to.be.equal(args.query)
+          } catch(error){
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => done(err))
     })
   })
 })
