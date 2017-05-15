@@ -1,8 +1,13 @@
 const chai = require('chai')
 const path = require('path')
+const nock = require('nock')
+const unirest = require('unirest')
+const qs = require('qs')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
-
+const wolframAPI = process.env.app_id || null
+const fs = require('fs')
+const wolframMock = nock('https://api.wolframalpha.com/v2/')
 const mongoose = mainFile.math.db
 
 const ocr = mainFile.ocr
@@ -261,18 +266,43 @@ describe('Testing Lib Math Module', () => {
       }
       done(err)
     })
-    it('should return wolfram result', function(done) {
-      math.wolframCall('7x+2 = 12')
+    it('should return wolfram mock', function(done) {
+      this.timeout(5000)
+
+      const mockOpts = {
+        xmlMock: '<?xml version="1.0" encoding="UTF-8" ?><queryresult error="false" mock="true"></queryresult>',
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x) + 2 = 12',
+        primary: true,
+        appid: wolframAPI
+      }
+
+      const url = unirest.get()
+                      .url(mockOpts.url)
+                      .query('input=' + mockOpts.input)
+                      .query('primary=true')
+                      .query('appid=' + mockOpts.appid)
+                      .options.url
+                      .split(' ').join('%20')
+                      .replace(mockOpts.url, '')
+
+      wolframMock
+        .get('/query'+url)
+        .reply(200, mockOpts.xmlMock)
+
+      math.wolframCall('(7*x) + 2 = 12')
         .then(result => {
           var err = null
+            expect(result.$.mock).to.be.equal('true')
           try {
           } catch(error) {
             err = error
           }
-          // done(err)
+          done(err)
         })
         .catch(err => {
-          // done(expect(err).to.be.ok)
+          console.log(err)
+          done(err)
         })
     })
   })
