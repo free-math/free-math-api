@@ -3,10 +3,10 @@ const path = require('path')
 const nock = require('nock')
 const unirest = require('unirest')
 const qs = require('qs')
+const fs = require('fs')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
 const wolframAPI = process.env.app_id || null
-const fs = require('fs')
 const wolframMock = nock('https://api.wolframalpha.com/v2/')
 const mongoose = mainFile.math.db
 
@@ -17,6 +17,12 @@ const api = mainFile.api
 
 var expect = chai.expect
 var dbStatus = 0
+
+describe('First build and test', () => {
+  it('should built without error', function (done) {
+    done()
+  })
+})
 
 describe('Mongoose connection', () => {
   it('should connect without error', function(done) {
@@ -31,12 +37,6 @@ describe('Mongoose connection', () => {
       }
       done(arg)
     }, 1000)
-  })
-})
-
-describe('First build and test', () => {
-  it('should built without error', function (done) {
-    done()
   })
 })
 
@@ -109,7 +109,6 @@ describe('Testing Lib OCR module', () => {
     })
   })
 })
-
 
 describe('Testing Lib Math Module', () => {
   describe('the functionalities of the getExpType method', () => {
@@ -257,6 +256,7 @@ describe('Testing Lib Math Module', () => {
     })
   })
   describe('the functionalities of the wolframCall method', () => {
+
     it('should be a function', function(done) {
       var err = null
       try {
@@ -290,7 +290,7 @@ describe('Testing Lib Math Module', () => {
         .get('/query'+url)
         .reply(200, mockOpts.xmlMock)
 
-      math.wolframCall('(7*x) + 2 = 12')
+      math.wolframCall(mockOpts.input)
         .then(result => {
           var err = null
             expect(result.$.mock).to.be.equal('true')
@@ -302,6 +302,48 @@ describe('Testing Lib Math Module', () => {
         })
         .catch(err => {
           console.log(err)
+          done(err)
+        })
+    })
+    it('should return wolfram result', function(done) {
+      this.timeout(5000)
+
+      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+
+      const mockOpts = {
+        xmlMock: XML,
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x) + 2 = 12',
+        primary: true,
+        appid: wolframAPI
+      }
+
+      const url = unirest.get()
+                      .url(mockOpts.url)
+                      .query('input=' + mockOpts.input)
+                      .query('primary=true')
+                      .query('appid=' + mockOpts.appid)
+                      .options.url
+                      .split(' ').join('%20')
+                      .replace(mockOpts.url, '')
+
+      wolframMock
+        .get('/query'+url)
+        .reply(200, mockOpts.xmlMock)
+
+      math.wolframCall(mockOpts.input)
+        .then(result => {
+          var err = null
+          try {
+            expect(result.$.success).to.be.equal('true')
+            expect(result.$.error).to.be.equal('false')
+            expect(result.pod).to.have.length.of.at.least(1)
+          } catch(error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => {
           done(err)
         })
     })
