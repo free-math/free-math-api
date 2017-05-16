@@ -5,6 +5,7 @@ const unirest = require('unirest')
 const xml2js = require('xml2js').parseString
 const qs = require('qs')
 const fs = require('fs')
+const _ = require('lodash')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
 const mainFile = require('../index.js')
 const wolframAPI = process.env.app_id || null
@@ -362,7 +363,7 @@ describe('Testing Lib Math Module', () => {
     it('should return wolfram result', function(done) {
       this.timeout(5000)
 
-      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
 
       const mockOpts = {
         xmlMock: XML,
@@ -433,7 +434,7 @@ describe('Testing Lib Math Module', () => {
         .catch(err => done(err))
     })
     it('should return wolfram result', function(done) {
-      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
 
       const mockOpts = {
         xmlMock: XML,
@@ -451,26 +452,22 @@ describe('Testing Lib Math Module', () => {
       utils
         .buildUrl(mockOpts)
         .then(bUrl =>{
-          wolframMock
-          .get('/query'+bUrl.query)
-          .reply(200, mockOpts.xmlMock)
-
-          math
-            .evaluate(args)
-            .then(result => {
-              var err = null
-              try {
-                // expect(result.solveType).to.be.equal('wolfram')
-                // expect(result.simplified).to.be.equal('7*x+2=12')
-                // expect(result.solution.pod).to.have.length.of.at.least(1)
-                // expect(result.solution.$.success).to.be.equal('true')
-                // expect(result.solution.$.error).to.be.equal('false')
-              } catch(error){
-                err = error
-              }
-              done(err)
-            })
-            .catch(err => done(err))
+          wolframMock.get('/query'+bUrl.query).reply(200, mockOpts.xmlMock)
+          return math.evaluate(args)
+        })
+        .then(result => {
+          var err = null
+          try {
+            expect(result.solveType).to.be.equal('wolfram')
+            // expect(result.solution.inputPod.$.value).to.be.equal('7*x+2=12')
+            // expect(result.solution.pod).to.have.length.of.at.least(1)
+            // console.log(result.solution.inputPod.subpod)
+            expect(result.solution.$.success).to.be.equal('true')
+            expect(result.solution.$.error).to.be.equal('false')
+          } catch(error){
+            err = error
+          }
+          done(err)
         })
         .catch(err => done(err))
     })
@@ -486,18 +483,19 @@ describe('Testing Lib Math Module', () => {
       done(err)
     })
     it('should return result pod', function(done) {
-      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
       xml2js(XML, (err, result) => {
         if (err) return done(err)
         // console.log(result.queryresult.pod)
         const id = 'Result'
+        const id2 = 'Solution'
         math
           .getPodById(result.queryresult.pod, id)
           .then(pod => {
             var mErr = null
             try {
               expect(pod).to.be.an('object')
-              expect(pod.$.id).to.be.equal(id)
+              expect(pod.$.id).to.be.satisfy( ()=> id || id2 )
             } catch(error) {
               mErr = error
             }
@@ -522,15 +520,20 @@ describe('Testing Lib Math Module', () => {
         })
     })
     it('should return no result error', function(done) {
-      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
       const id = 'Result'
 
       xml2js(XML, (err, result) => {
         if (err) return done(err)
 
-        result.queryresult.pod.splice(1,1)
         math
           .getPodById(result.queryresult.pod, id)
+          .then(resultPod => {
+            result.queryresult.pod = _.filter(result.queryresult.pod, pod => {
+              return !_.isEqual(pod, resultPod)
+            })
+            return math.getPodById(result.queryresult.pod, id)
+          })
           .then(pod => done(pod))
           .catch(err => {
             var mErr = null
