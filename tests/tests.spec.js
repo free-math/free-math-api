@@ -505,7 +505,7 @@ describe('Testing Lib Math Module', () => {
           .catch(err => done(err))
       })
     })
-    it('should return is not array errir', function(done) {
+    it('should return is not array error', function(done) {
       math
         .getResultPod(1)
         .then(pod => done(pod))
@@ -518,6 +518,27 @@ describe('Testing Lib Math Module', () => {
           }
           done(mErr)
         })
+    })
+    it('should return no result error', function(done) {
+      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      xml2js(XML, (err, result) => {
+        if (err) return done(err)
+
+        result.queryresult.pod.splice(1,1)
+
+        math
+          .getResultPod(result.queryresult.pod)
+          .then(pod => done(pod))
+          .catch(err => {
+            var mErr = null
+            try {
+              expect(err.message).to.be.equal('No result found!')
+            } catch(error) {
+              mErr = error
+            }
+            done(mErr)
+          })
+      })
     })
   })
 })
