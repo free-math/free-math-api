@@ -13,6 +13,7 @@ const mongoose = mainFile.math.db
 const ocr = mainFile.ocr
 const math = mainFile.math
 const user = mainFile.user
+const utils = mainFile.utils
 const api = mainFile.api
 
 var expect = chai.expect
@@ -110,6 +111,62 @@ describe('Testing Lib OCR module', () => {
   })
 })
 
+describe('Testing the Utils Module', () => {
+  describe('the functionalities of the buildUrl method', () => {
+    it('should be a function', function(done) {
+      var err = null
+      try {
+        expect(typeof utils.buildUrl).to.be.equal('function')
+      } catch(error) {
+        err = error
+      }
+      done(err)
+    })
+    it('should build url correctly', function(done) {
+      var err = null
+      const args = {
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x)+2=12'
+      }
+      const testUrl = 'https://api.wolframalpha.com/v2/query?input=(7*x)%2B2%3D12&primary=true&appid=XG33XY-HP96JJU3WX'
+
+      utils
+        .buildUrl(args)
+        .then(result => {
+          var err = null
+          try {
+            expect(result.url).to.be.equal(testUrl)
+          } catch(error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => done(err))
+    })
+    it('should build query correctly', function(done) {
+      var err = null
+      const args = {
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x)+2=12'
+      }
+      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid=XG33XY-HP96JJU3WX'
+
+      utils
+        .buildUrl(args)
+        .then(result => {
+          var err = null
+          try {
+            expect(result.query).to.be.equal(testUrl)
+          } catch(error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => done(err))
+    })
+  })
+})
+
 describe('Testing Lib Math Module', () => {
   describe('the functionalities of the getExpType method', () => {
     it('should be a function', function(done) {
@@ -127,7 +184,7 @@ describe('Testing Lib Math Module', () => {
       .then(result => {
         var err = null
         try {
-          console.log(result)
+          // console.log(result)
           expect(result).to.be.an('object')
           expect(result).to.have.property('expression').equal('x ^ 2 - 7 * x + 3 = 0')
           expect(result).to.have.property('isEq').equal(true)
@@ -272,38 +329,34 @@ describe('Testing Lib Math Module', () => {
       const mockOpts = {
         xmlMock: '<?xml version="1.0" encoding="UTF-8" ?><queryresult error="false" mock="true"></queryresult>',
         url: 'https://api.wolframalpha.com/v2/query',
-        input: '(7*x) + 2 = 12',
+        input: '(7*x)+2=12',
         primary: true,
         appid: wolframAPI
       }
 
-      const url = unirest.get()
-                      .url(mockOpts.url)
-                      .query('input=' + mockOpts.input)
-                      .query('primary=true')
-                      .query('appid=' + mockOpts.appid)
-                      .options.url
-                      .split(' ').join('%20')
-                      .replace(mockOpts.url, '')
+      utils
+        .buildUrl(mockOpts)
+        .then(bUrl =>{
 
-      wolframMock
-        .get('/query'+url)
-        .reply(200, mockOpts.xmlMock)
+          wolframMock
+          .get('/query'+bUrl.query)
+          .reply(200, mockOpts.xmlMock)
 
-      math.wolframCall(mockOpts.input)
-        .then(result => {
-          var err = null
-            expect(result.$.mock).to.be.equal('true')
-          try {
-          } catch(error) {
-            err = error
-          }
-          done(err)
+          math
+            .wolframCall(mockOpts.input)
+            .then(result => {
+              var err = null
+                expect(result.$.mock).to.be.equal('true')
+              try {
+              } catch(error) {
+                err = error
+              }
+              done(err)
+            })
+            .catch(err => done(err) )
         })
-        .catch(err => {
-          console.log(err)
-          done(err)
-        })
+        .catch(err => done(err) )
+
     })
     it('should return wolfram result', function(done) {
       this.timeout(5000)
@@ -313,39 +366,36 @@ describe('Testing Lib Math Module', () => {
       const mockOpts = {
         xmlMock: XML,
         url: 'https://api.wolframalpha.com/v2/query',
-        input: '(7*x) + 2 = 12',
+        input: '(7*x)+2=12',
         primary: true,
         appid: wolframAPI
       }
 
-      const url = unirest.get()
-                      .url(mockOpts.url)
-                      .query('input=' + mockOpts.input)
-                      .query('primary=true')
-                      .query('appid=' + mockOpts.appid)
-                      .options.url
-                      .split(' ').join('%20')
-                      .replace(mockOpts.url, '')
+      utils
+        .buildUrl(mockOpts)
+        .then(bUrl =>{
+          wolframMock
+          .get('/query'+bUrl.query)
+          .reply(200, mockOpts.xmlMock)
 
-      wolframMock
-        .get('/query'+url)
-        .reply(200, mockOpts.xmlMock)
-
-      math.wolframCall(mockOpts.input)
-        .then(result => {
-          var err = null
-          try {
-            expect(result.$.success).to.be.equal('true')
-            expect(result.$.error).to.be.equal('false')
-            expect(result.pod).to.have.length.of.at.least(1)
-          } catch(error) {
-            err = error
-          }
-          done(err)
+          math
+            .wolframCall(mockOpts.input)
+            .then(result => {
+              var err = null
+              try {
+                expect(result.$.success).to.be.equal('true')
+                expect(result.$.error).to.be.equal('false')
+                expect(result.pod).to.have.length.of.at.least(1)
+              } catch(error) {
+                err = error
+              }
+              done(err)
+            })
+            .catch(err => {
+              done(err)
+            })
         })
-        .catch(err => {
-          done(err)
-        })
+        .catch(err => done(err))
     })
   })
   describe('the functionalities of the evaluate method',() => {
@@ -378,6 +428,48 @@ describe('Testing Lib Math Module', () => {
             err = error
           }
           done(err)
+        })
+        .catch(err => done(err))
+    })
+    it('should return wolfram result', function(done) {
+      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+
+      const mockOpts = {
+        xmlMock: XML,
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x)+2=12',
+        primary: true,
+        appid: wolframAPI
+      }
+
+      const args = {
+        user: '68301f4aef1facb568301f4a',
+        query: mockOpts.input
+      }
+
+      utils
+        .buildUrl(mockOpts)
+        .then(bUrl =>{
+          wolframMock
+          .get('/query'+bUrl.query)
+          .reply(200, mockOpts.xmlMock)
+
+          math
+            .evaluate(args)
+            .then(result => {
+              var err = null
+              try {
+                // expect(result.solveType).to.be.equal('wolfram')
+                // expect(result.simplified).to.be.equal('7*x+2=12')
+                // expect(result.solution.pod).to.have.length.of.at.least(1)
+                // expect(result.solution.$.success).to.be.equal('true')
+                // expect(result.solution.$.error).to.be.equal('false')
+              } catch(error){
+                err = error
+              }
+              done(err)
+            })
+            .catch(err => done(err))
         })
         .catch(err => done(err))
     })
