@@ -2,6 +2,7 @@ const chai = require('chai')
 const path = require('path')
 const nock = require('nock')
 const unirest = require('unirest')
+const xml2js = require('xml2js').parseString
 const qs = require('qs')
 const fs = require('fs')
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
@@ -472,6 +473,51 @@ describe('Testing Lib Math Module', () => {
             .catch(err => done(err))
         })
         .catch(err => done(err))
+    })
+  })
+  describe('the functionalitis of the getResultPod method', () => {
+    it('should be a function', function(done) {
+      var err = null
+      try {
+        expect(typeof math.getResultPod).to.be.equal('function')
+      } catch(error) {
+        err = error
+      }
+      done(err)
+    })
+    it('should return result pod', function(done) {
+      const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      xml2js(XML, (err, result) => {
+        if (err) return done(err)
+        // console.log(result.queryresult.pod)
+        math
+          .getResultPod(result.queryresult.pod)
+          .then(pod => {
+            var mErr = null
+            try {
+              expect(pod).to.be.an('object')
+              expect(pod.$.id).to.be.equal('Result')
+            } catch(error) {
+              mErr = error
+            }
+            done(mErr)
+          })
+          .catch(err => done(err))
+      })
+    })
+    it('should return is not array errir', function(done) {
+      math
+        .getResultPod(1)
+        .then(pod => done(pod))
+        .catch(err => {
+          var mErr = null
+          try {
+            expect(err.message).to.be.equal('Parameter is not an Array!')
+          } catch(error) {
+            mErr = error
+          }
+          done(mErr)
+        })
     })
   })
 })
