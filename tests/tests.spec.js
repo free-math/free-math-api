@@ -475,11 +475,11 @@ describe('Testing Lib Math Module', () => {
         .catch(err => done(err))
     })
   })
-  describe('the functionalitis of the getResultPod method', () => {
+  describe('the functionalitis of the getPodById method', () => {
     it('should be a function', function(done) {
       var err = null
       try {
-        expect(typeof math.getResultPod).to.be.equal('function')
+        expect(typeof math.getPodById).to.be.equal('function')
       } catch(error) {
         err = error
       }
@@ -490,13 +490,14 @@ describe('Testing Lib Math Module', () => {
       xml2js(XML, (err, result) => {
         if (err) return done(err)
         // console.log(result.queryresult.pod)
+        const id = 'Result'
         math
-          .getResultPod(result.queryresult.pod)
+          .getPodById(result.queryresult.pod, id)
           .then(pod => {
             var mErr = null
             try {
               expect(pod).to.be.an('object')
-              expect(pod.$.id).to.be.equal('Result')
+              expect(pod.$.id).to.be.equal(id)
             } catch(error) {
               mErr = error
             }
@@ -506,8 +507,9 @@ describe('Testing Lib Math Module', () => {
       })
     })
     it('should return is not array error', function(done) {
+      const id = 'Result'
       math
-        .getResultPod(1)
+        .getPodById(1, id)
         .then(pod => done(pod))
         .catch(err => {
           var mErr = null
@@ -521,18 +523,19 @@ describe('Testing Lib Math Module', () => {
     })
     it('should return no result error', function(done) {
       const XML = fs.readFileSync(appDir+"/tests/actual_response.xml", 'utf-8')
+      const id = 'Result'
+
       xml2js(XML, (err, result) => {
         if (err) return done(err)
 
         result.queryresult.pod.splice(1,1)
-
         math
-          .getResultPod(result.queryresult.pod)
+          .getPodById(result.queryresult.pod, id)
           .then(pod => done(pod))
           .catch(err => {
             var mErr = null
             try {
-              expect(err.message).to.be.equal('No result found!')
+              expect(err.message).to.be.equal('No '+id+' found!')
             } catch(error) {
               mErr = error
             }
