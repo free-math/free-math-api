@@ -514,7 +514,7 @@ describe('Testing Lib Math Module', () => {
         .catch(err => done(err))
     })
   })
-  describe('the functionalitisionalities of the solve method', () => {
+  describe('the functionalities of the solve method', () => {
     it('should be a function', function (done) {
       var err = null
       try {
@@ -553,6 +553,53 @@ describe('Testing Lib Math Module', () => {
           })
         })
         .catch(err => done(err))
+    })
+    // it('should solve and save wolfram result  ', function (done) {
+    //
+    //   const XML = fs.readFileSync(appDir + '/tests/(7*x)+2=12.xml', 'utf-8')
+    //
+    //   const mockOpts = {
+    //     xmlMock: XML,
+    //     url: 'https://api.wolframalpha.com/v2/query',
+    //     input: '(7*x)+2=12',
+    //     primary: true,
+    //     appid: wolframAPI
+    //   }
+    //
+    //   const args = {
+    //     user: '68301f4aef1facb568301f4a',
+    //     query: mockOpts.input
+    //   }
+    //
+    //   utils
+    //     .buildUrl(mockOpts)
+    //     .then(bUrl => {
+    //       wolframMock.get('/query' + bUrl.query).reply(200, mockOpts.xmlMock)
+    //       return math.solve(args)
+    //     })
+    //     .then(result => {
+    //       console.log(result)
+    //       var mErr = null
+    //       try {
+    //         expect(result.evaluation.solveType).to.be.equal('wolfram')
+    //         // expect(result.evaluation.expression).to.be.equal('sqrt(49) + 3')
+    //         // expect(result.evaluation.query).to.be.equal('sqrt(49) + 3')
+    //         // expect(result.evaluation.result).to.be.equal(10)
+    //         expect(result.firstTime).to.be.ok
+    //       } catch (error) {
+    //         mErr = error
+    //       }
+    //       if (mErr) return done(mErr)
+    //       // History.findByIdAndRemove(result.evaluation._id, (err, res) => {
+    //       //   if (err) return done(err)
+    //       //   History.findById(res._id, (err, result) => {
+    //       //     if (err) return done(err)
+    //       //     expect(result).to.be.not.ok
+    //       //     done(mErr)
+    //       //   })
+    //       // })
+    //     })
+    //     .catch(err => done(err))
     })
     it('should solve and save mathjs without user on input result', function (done) {
       const args = {
@@ -618,7 +665,7 @@ describe('Testing Lib Math Module', () => {
         })
     })
   })
-  describe('the functionalitis of the getPodById method', () => {
+  describe('the functionalities of the getPodById method', () => {
     it('should be a function', function (done) {
       var err = null
       try {
