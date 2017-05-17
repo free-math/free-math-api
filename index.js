@@ -7,6 +7,9 @@ const appDir = process.env.PWD + '/'
 const db = require('./lib/mongoose.js')()
 module.exports.db = db
 
+const utils = require('./lib/utils.js')
+module.exports.utils = utils
+
 const math = require('./lib/math.js')
 module.exports.math = math
 
@@ -15,9 +18,6 @@ module.exports.ocr = ocr
 
 const user = require('./lib/user.js')
 module.exports.user = user
-
-const utils = require('./lib/utils.js')
-module.exports.utils = utils
 
 const api = require('./api/main.js')
 module.exports.api = api
