@@ -3,7 +3,6 @@ const chai = require('chai')
 const path = require('path')
 const nock = require('nock')
 const unirest = require('unirest')
-const xml2js = require('xml2js').parseString
 const qs = require('qs')
 const fs = require('fs')
 const _ = require('lodash')
@@ -182,6 +181,54 @@ describe('Testing the Utils Module', () => {
           var err = null
           try {
             expect(result.url).to.be.equal(testUrl)
+          } catch (error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => done(err))
+    })
+    it('should build query correctly', function (done) {
+      var err = null
+      const args = {
+        url: 'https://api.wolframalpha.com/v2/query',
+        input: '(7*x)+2=12'
+      }
+      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid=XG33XY-HP96JJU3WX'
+
+      utils
+        .buildUrl(args)
+        .then(result => {
+          var err = null
+          try {
+            expect(result.query).to.be.equal(testUrl)
+          } catch (error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => done(err))
+    })
+  })
+  describe('the functionalities of the parseXML method', () => {
+    it('should be a function', function (done) {
+      var err = null
+      try {
+        expect(typeof utils.parseXml).to.be.equal('function')
+      } catch (error) {
+        err = error
+      }
+      done(err)
+    })
+    it('should parse xml correctly correctly', function (done) {
+      const XML = fs.readFileSync(appDir + '/tests/(7*x)+2=12.xml', 'utf-8')
+
+      utils
+        .parseXml(XML)
+        .then(result => {
+          var err = null
+          try {
+            expect(result.queryresult).to.have.property('info')
           } catch (error) {
             err = error
           }
@@ -391,7 +438,7 @@ describe('Testing Lib Math Module', () => {
             .wolframCall(mockOpts.input)
             .then(result => {
               var err = null
-              expect(result.$.mock).to.be.equal('true')
+              expect(result.info.mock).to.be.equal('true')
               try {
               } catch (error) {
                 err = error
@@ -422,22 +469,18 @@ describe('Testing Lib Math Module', () => {
           .get('/query' + bUrl.query)
           .reply(200, mockOpts.xmlMock)
 
-          math
-            .wolframCall(mockOpts.input)
-            .then(result => {
-              var err = null
-              try {
-                expect(result.$.success).to.be.equal('true')
-                expect(result.$.error).to.be.equal('false')
-                expect(result.pod).to.have.length.of.at.least(1)
-              } catch (error) {
-                err = error
-              }
-              done(err)
-            })
-            .catch(err => {
-              done(err)
-            })
+          return math.wolframCall(mockOpts.input)
+        })
+        .then(result => {
+          var err = null
+          try {
+            expect(result.info.success).to.be.equal('true')
+            expect(result.info.error).to.be.equal('false')
+            expect(Object.keys(result.pod)).to.have.length.of.at.least(1)
+          } catch (error) {
+            err = error
+          }
+          done(err)
         })
         .catch(err => done(err))
     })
@@ -504,8 +547,8 @@ describe('Testing Lib Math Module', () => {
             // expect(result.solution.inputPod.$.value).to.be.equal('7*x+2=12')
             // expect(result.solution.pod).to.have.length.of.at.least(1)
             // console.log(result.solution.inputPod.subpod)
-            expect(result.solution.$.success).to.be.equal('true')
-            expect(result.solution.$.error).to.be.equal('false')
+            expect(result.solution.info.success).to.be.equal('true')
+            expect(result.solution.info.error).to.be.equal('false')
           } catch (error) {
             err = error
           }
@@ -600,7 +643,7 @@ describe('Testing Lib Math Module', () => {
     //       // })
     //     })
     //     .catch(err => done(err))
-    })
+    // })
     it('should solve and save mathjs without user on input result', function (done) {
       const args = {
         query: 'sqrt(49) + 3'
@@ -677,25 +720,28 @@ describe('Testing Lib Math Module', () => {
     })
     it('should return result pod', function (done) {
       const XML = fs.readFileSync(appDir + '/tests/(7*x)+2=12.xml', 'utf-8')
-      xml2js(XML, (err, result) => {
-        if (err) return done(err)
-        // console.log(result.queryresult.pod)
-        const id = 'Result'
-        const id2 = 'Solution'
-        math
-          .getPodById(result.queryresult.pod, id)
-          .then(pod => {
-            var mErr = null
-            try {
-              expect(pod).to.be.an('object')
-              expect(pod.$.id).to.be.satisfy(() => id || id2)
-            } catch (error) {
-              mErr = error
-            }
-            done(mErr)
+      const id = 'Result'
+      const id2 = 'Solution'
+
+      utils
+        .parseXml(XML)
+        .then(result => {
+          result = utils.mapKeysDeep(result, (val, key) => {
+            return key === '$'? 'info' : key
           })
-          .catch(err => done(err))
-      })
+          return math.getPodById(result.queryresult.pod, id)
+        })
+        .then(pod => {
+          var mErr = null
+          try {
+            expect(pod).to.be.an('object')
+            expect(pod.info.id).to.be.satisfy(() => id || id2)
+          } catch (error) {
+            mErr = error
+          }
+          done(mErr)
+        })
+        .catch(err => done(err))
     })
     it('should return is not array error', function (done) {
       const id = 'Result'
@@ -705,7 +751,7 @@ describe('Testing Lib Math Module', () => {
         .catch(err => {
           var mErr = null
           try {
-            expect(err.message).to.be.equal('Parameter is not an Array!')
+            expect(err.message).to.be.equal('Parameter is not valid!')
           } catch (error) {
             mErr = error
           }
@@ -715,29 +761,29 @@ describe('Testing Lib Math Module', () => {
     it('should return no result error', function (done) {
       const XML = fs.readFileSync(appDir + '/tests/(7*x)+2=12.xml', 'utf-8')
       const id = 'Result'
+      var parsedXml = {}
 
-      xml2js(XML, (err, result) => {
-        if (err) return done(err)
-
-        math
-          .getPodById(result.queryresult.pod, id)
-          .then(resultPod => {
-            result.queryresult.pod = _.filter(result.queryresult.pod, pod => {
-              return !_.isEqual(pod, resultPod)
-            })
-            return math.getPodById(result.queryresult.pod, id)
+      utils
+        .parseXml(XML)
+        .then(result => {
+          parsedXml = result
+          return math.getPodById(parsedXml.queryresult.pod, id)
+        })
+        .then(resultPod => {
+          parsedXml.queryresult.pod = _.filter(parsedXml.queryresult.pod, pod => {
+            return !_.isEqual(pod, resultPod)
           })
-          .then(pod => done(pod))
-          .catch(err => {
-            var mErr = null
-            try {
-              expect(err.message).to.be.equal('No ' + id + ' found!')
-            } catch (error) {
-              mErr = error
-            }
-            done(mErr)
-          })
-      })
+          return math.getPodById(parsedXml.queryresult.pod, id)
+        })
+        .catch(err => {
+          var mErr = null
+          try {
+            expect(err.message).to.be.equal('No ' + id + ' found!')
+          } catch (error) {
+            mErr = error
+          }
+          done(mErr)
+        })
     })
   })
 })
