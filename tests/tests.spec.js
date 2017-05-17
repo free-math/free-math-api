@@ -554,6 +554,35 @@ describe('Testing Lib Math Module', () => {
         })
         .catch(err => done(err))
     })
+    it('should solve and save mathjs without user on input result', function (done) {
+      const args = {
+        query: 'sqrt(49) + 3'
+      }
+      math
+        .solve(args)
+        .then(result => {
+          var mErr = null
+          try {
+            expect(result.evaluation.solveType).to.be.equal('mathjs')
+            expect(result.evaluation.expression).to.be.equal('sqrt(49) + 3')
+            expect(result.evaluation.query).to.be.equal('sqrt(49) + 3')
+            expect(result.evaluation.result).to.be.equal(10)
+            expect(result.firstTime).to.be.ok
+          } catch (error) {
+            mErr = error
+          }
+          if (mErr) return done(mErr)
+          History.findByIdAndRemove(result.evaluation._id, (err, res) => {
+            if (err) return done(err)
+            History.findById(res._id, (err, result) => {
+              if (err) return done(err)
+              expect(result).to.be.not.ok
+              done(mErr)
+            })
+          })
+        })
+        .catch(err => done(err))
+    })
     it('should return param error', function (done) {
       math
         .solve()
@@ -563,6 +592,25 @@ describe('Testing Lib Math Module', () => {
           try {
             expect(err).to.be.ok
             expect(err.message).to.be.equal('Please provide a parameter')
+          } catch(error) {
+            mErr = error
+          }
+          done(mErr)
+        })
+    })
+    it('should return query type error', function (done) {
+      const args = {
+        user: '68301f4aef1facb568301f4a',
+        query: [12]
+      }
+      math
+        .solve(args)
+        .then(result => done(result))
+        .catch(err => {
+          var mErr = null
+          try {
+            expect(err).to.be.ok
+            expect(err.message).to.be.equal('Query must be a string')
           } catch(error) {
             mErr = error
           }
