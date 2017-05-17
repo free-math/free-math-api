@@ -1,3 +1,4 @@
+
 const chai = require('chai')
 const path = require('path')
 const nock = require('nock')
@@ -6,11 +7,19 @@ const xml2js = require('xml2js').parseString
 const qs = require('qs')
 const fs = require('fs')
 const _ = require('lodash')
+
 const appDir = (path.resolve(__dirname) + '/').replace('tests/', '')
-const mainFile = require('../index.js')
+const mainFile = require(appDir+'index.js')
 const wolframAPI = process.env.app_id || null
 const wolframMock = nock('https://api.wolframalpha.com/v2/')
-const mongoose = mainFile.math.db
+
+const db = mainFile.db
+const Models = db.models
+const mongoose = db.mongoose
+const Schema = mongoose.Schema
+const ObjectId = Schema.Types.ObjectId
+const Mixed = Schema.Types.Mixed
+const History = Models.History
 
 const ocr = mainFile.ocr
 const math = mainFile.math
@@ -32,14 +41,48 @@ describe('Mongoose connection', () => {
     this.timeout(5000)
     var arg = null
     setTimeout(() =>{
-      dbStatus = mongoose.connection.readyState
       try {
-        expect(dbStatus).to.be.equal(1)
+        expect(mongoose.connection.readyState).to.be.equal(1)
       } catch(err) {
         arg = err
       }
       done(arg)
     }, 1000)
+  })
+  it('should save History without error', function(done) {
+    this.timeout(5000)
+
+    var mErr = null
+    var hist = null
+
+    try {
+      hist = new History({
+        solveType: 'mathjs',
+        query: '2*x + 5 = 0',
+        result: {
+          testUrl: '123123',
+          mixed: true
+        }
+      })
+    } catch(error) {
+      mErr = error
+    }
+
+    hist.save(err => {
+      if (err) return done(err)
+      History.findByIdAndRemove(hist._id, (err, result) => {
+        if(err) return done(err)
+        History.findById(hist._id, (err, result) => {
+          try {
+            expect(err).to.be.not.ok
+            expect(result).to.be.not.ok
+          } catch(error) {
+            mErr = error
+          }
+          done(mErr)
+        })
+      })
+    })
   })
 })
 
@@ -471,6 +514,78 @@ describe('Testing Lib Math Module', () => {
         })
         .catch(err => done(err))
     })
+  })
+  describe('the functionalitisionalities of the solve method',() => {
+    it('should be a function', function(done) {
+      var err = null
+      try {
+        expect(typeof math.solve).to.be.equal('function')
+      } catch(error) {
+        err = error
+      }
+      done(err)
+    })
+    // it('should return mathjs result', function(done) {
+    //   const args = {
+    //     user: '68301f4aef1facb568301f4a',
+    //     query: 'sqrt(49) + 3'
+    //   }
+    //   math
+    //     .evaluate(args)
+    //     .then(result => {
+    //       var err = null
+    //       try {
+    //         // console.log(result)
+    //         expect(result.solveType).to.be.equal('mathjs')
+    //         expect(result.simplified).to.be.equal('10')
+    //         expect(result.solution).to.be.equal(10)
+    //         expect(result.error).to.be.null
+    //         expect(result.expression).to.be.equal(args.query)
+    //       } catch(error){
+    //         err = error
+    //       }
+    //       done(err)
+    //     })
+    //     .catch(err => done(err))
+    // })
+    // it('should return wolfram result', function(done) {
+    //   const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
+    //
+    //   const mockOpts = {
+    //     xmlMock: XML,
+    //     url: 'https://api.wolframalpha.com/v2/query',
+    //     input: '(7*x)+2=12',
+    //     primary: true,
+    //     appid: wolframAPI
+    //   }
+    //
+    //   const args = {
+    //     user: '68301f4aef1facb568301f4a',
+    //     query: mockOpts.input
+    //   }
+    //
+    //   utils
+    //     .buildUrl(mockOpts)
+    //     .then(bUrl =>{
+    //       wolframMock.get('/query'+bUrl.query).reply(200, mockOpts.xmlMock)
+    //       return math.evaluate(args)
+    //     })
+    //     .then(result => {
+    //       var err = null
+    //       try {
+    //         expect(result.solveType).to.be.equal('wolfram')
+    //         // expect(result.solution.inputPod.$.value).to.be.equal('7*x+2=12')
+    //         // expect(result.solution.pod).to.have.length.of.at.least(1)
+    //         // console.log(result.solution.inputPod.subpod)
+    //         expect(result.solution.$.success).to.be.equal('true')
+    //         expect(result.solution.$.error).to.be.equal('false')
+    //       } catch(error){
+    //         err = error
+    //       }
+    //       done(err)
+    //     })
+    //     .catch(err => done(err))
+    // })
   })
   describe('the functionalitis of the getPodById method', () => {
     it('should be a function', function(done) {
