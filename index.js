@@ -4,18 +4,20 @@ const path = require('path')
 const async = require('async')
 const appDir = process.env.PWD + '/'
 
-//Imports
-const math = require('./lib/math.js')
-const ocr = require('./lib/ocr.js')
-const user = require('./lib/user.js')
-const utils = require('./lib/utils.js')
-const api = require('./api/main.js')
+const db = require('./lib/mongoose.js')()
+module.exports.db = db
 
-//Exports
-module.exports = {
-  api: api,
-  math: math,
-  ocr: ocr,
-  utils: utils,
-  user: user
-}
+const math = require('./lib/math.js')
+module.exports.math = math
+
+const ocr = require('./lib/ocr.js')
+module.exports.ocr = ocr
+
+const user = require('./lib/user.js')
+module.exports.user = user
+
+const utils = require('./lib/utils.js')
+module.exports.utils = utils
+
+const api = require('./api/main.js')
+module.exports.api = api
