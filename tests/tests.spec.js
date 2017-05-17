@@ -59,6 +59,7 @@ describe('Mongoose connection', () => {
       hist = new History({
         solveType: 'mathjs',
         query: '2*x + 5 = 0',
+        expression: '2*x + 5 = 0',
         result: {
           testUrl: '123123',
           mixed: true
@@ -525,29 +526,36 @@ describe('Testing Lib Math Module', () => {
       }
       done(err)
     })
-    // it('should return mathjs result', function(done) {
-    //   const args = {
-    //     user: '68301f4aef1facb568301f4a',
-    //     query: 'sqrt(49) + 3'
-    //   }
-    //   math
-    //     .evaluate(args)
-    //     .then(result => {
-    //       var err = null
-    //       try {
-    //         // console.log(result)
-    //         expect(result.solveType).to.be.equal('mathjs')
-    //         expect(result.simplified).to.be.equal('10')
-    //         expect(result.solution).to.be.equal(10)
-    //         expect(result.error).to.be.null
-    //         expect(result.expression).to.be.equal(args.query)
-    //       } catch(error){
-    //         err = error
-    //       }
-    //       done(err)
-    //     })
-    //     .catch(err => done(err))
-    // })
+    it('should solve and save mathjs result', function(done) {
+      const args = {
+        user: '68301f4aef1facb568301f4a',
+        query: 'sqrt(49) + 3'
+      }
+      math
+        .solve(args)
+        .then(result => {
+          var mErr = null
+          try {
+            expect(result.evaluation.solveType).to.be.equal('mathjs')
+            expect(result.evaluation.expression).to.be.equal('sqrt(49) + 3')
+            expect(result.evaluation.query).to.be.equal('sqrt(49) + 3')
+            expect(result.evaluation.result).to.be.equal(10)
+            expect(result.firstTime).to.be.ok
+          } catch(error){
+            mErr = error
+          }
+          if (mErr) return done(mErr)
+          History.findByIdAndRemove(result.evaluation._id, (err, res) => {
+            if(err) return done(err)
+            History.findById(res._id, (err, result) => {
+              if(err) return done(err)
+              expect(result).to.be.not.ok
+              done(mErr)
+            })
+          })
+        })
+        .catch(err => done(err))
+    })
     // it('should return wolfram result', function(done) {
     //   const XML = fs.readFileSync(appDir+"/tests/(7*x)+2=12.xml", 'utf-8')
     //
