@@ -17,8 +17,8 @@
 
 ## The Project Structure
 The project has three main componenets:
-  * [The RESTful API]()
-  * [The Library]()
-  * [The React-App]()
+  * [The RESTful API](https://github.com/midyan/free-math/tree/master/api)
+  * [The Library](https://github.com/midyan/free-math/tree/master/lib)
+  * [The React-App](https://github.com/midyan/free-math/tree/master)
 
 Click on any of these for more detailed documentation.
