@@ -14,3 +14,11 @@
   I intend to create a large enough data-set to train a specific neural-network for solving any math problem. Much like Wolfram, but free as a bird :bird:.
 
    If you have to be a AI Wizard with nothing better to do, come help me. If you are a NodeJS Ninja and wish to change the world or something, come help me. I don't bite. Just email me: yannunes@gmail.com
+
+## The Project Structure
+The project has three main componenets:
+  * [The RESTful API]()
+  * [The Library]()
+  * [The React-App]()
+
+Click on any of these for more detailed documentation.

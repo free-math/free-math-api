@@ -46,7 +46,7 @@ describe('Testing the Utils Module', () => {
         url: 'https://api.wolframalpha.com/v2/query',
         input: '(7*x)+2=12'
       }
-      const testUrl = 'https://api.wolframalpha.com/v2/query?input=(7*x)%2B2%3D12&primary=true&appid=app_id'
+      const testUrl = 'https://api.wolframalpha.com/v2/query?input=(7*x)%2B2%3D12&primary=true&appid='+wolframAPI
 
       utils
         .buildUrl(args)
@@ -67,7 +67,7 @@ describe('Testing the Utils Module', () => {
         url: 'https://api.wolframalpha.com/v2/query',
         input: '(7*x)+2=12'
       }
-      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid='+app_id
+      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid='+wolframAPI
 
       utils
         .buildUrl(args)
@@ -115,7 +115,7 @@ describe('Testing the Utils Module', () => {
         url: 'https://api.wolframalpha.com/v2/query',
         input: '(7*x)+2=12'
       }
-      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid=app_id'
+      const testUrl = '?input=(7*x)%2B2%3D12&primary=true&appid='+wolframAPI
 
       utils
         .buildUrl(args)
