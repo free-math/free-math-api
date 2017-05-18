@@ -4,7 +4,16 @@
   "description": "Mathmatics made easy!",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha tests/tests.spec.js"
+    "test": "npm run test-all",
+    "test-all": "./node_modules/mocha/bin/mocha --recursive tests",
+    "test-lib": "./node_modules/mocha/bin/mocha --recursive tests/lib",
+    "test-lib-math": "./node_modules/mocha/bin/mocha --recursive tests/lib/math",
+    "test-lib-ocr": "./node_modules/mocha/bin/mocha --recursive tests/lib/ocr",
+    "test-lib-utils": "./node_modules/mocha/bin/mocha --recursive tests/lib/utils",
+    "test-api": "./node_modules/mocha/bin/mocha --recursive tests/lib",
+    "test-api-math": "./node_modules/mocha/bin/mocha --recursive tests/api/math",
+    "test-api-ocr": "./node_modules/mocha/bin/mocha --recursive tests/api/ocr",
+    "test-api-user": "./node_modules/mocha/bin/mocha --recursive tests/api/utils"
   },
   "repository": {
     "type": "git",
