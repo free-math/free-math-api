@@ -42,7 +42,8 @@
   },
   "dependencies": {
     "async": "^2.4.0",
-    "express": "^4.15.2",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
     "fs": "0.0.1-security",
     "lodash": "^4.17.4",
     "mathjs": "^3.12.2",
