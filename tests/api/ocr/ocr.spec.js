@@ -38,7 +38,6 @@ describe('API testing', () => {
           .send(options)
           .end(result => {
             if(result.status == 500) return done(result.body)
-            console.log(result.body)
             expect(result.body)
               .to.be.an('object')
               .and.to.have.property('fileContent')
