@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const async = require('async')
 const express = require('express')
+const bodyParser = require('body-parser')
 const address = '127.0.0.1'
 const port = 7000
 const app = express()
@@ -28,8 +29,8 @@ var listener = app.listen(port, address, () => {
 })
 
 module.exports = {
-  math: math,
-  user: user,
+  // math: math,
+  // user: user,
   ocr: ocr,
   app: app
 }

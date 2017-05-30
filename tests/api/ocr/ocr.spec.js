@@ -1,9 +1,9 @@
+const path = require('path')
 const currentDir = (path.resolve(__dirname) + '/')
 const apiDir = currentDir.replace('tests/api/ocr', '')
 const mainFile = require(apiDir + '/api/main.js')
 const chai = require('chai')
 const unirest = require('unirest')
-const path = require('path')
 const fs = require('fs')
 
 const expect = chai.expect
