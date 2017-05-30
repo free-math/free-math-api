@@ -11,8 +11,25 @@ branches:
 services:
   - mongodb
 
+#Environment Variables
+env:
+  - CXX=g++-4.9
+
+#External Plugins
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+
+#Installing tesseract
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq tesseract-ocr tesseract-ocr-nld
+
 #Install NPM dependencies
-before_script: npm install
+#before_script: npm install
 
 #Test script
-script: npm test
+#script: npm test
