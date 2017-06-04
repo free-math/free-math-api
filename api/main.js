@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({limit: '10mb'}))
 
 const ocr = require('./ocr/ocr.api.js')
-// const math = require('./math/math.api.js')
+const math = require('./math/math.api.js')
 // const user = require('./user/user.api.js')
 
 app.get('/api/test', (req, res) => {
@@ -20,7 +20,7 @@ app.get('/api/test', (req, res) => {
 })
 
 app.use('/api', ocr)
-// app.use('/api', math)
+app.use('/api', math)
 // app.use('/api', user)
 
 
