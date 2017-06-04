@@ -1,6 +1,6 @@
 const path = require('path')
 const currentDir = (path.resolve(__dirname) + '/')
-const apiDir = currentDir.replace('tests/api/ocr', '')
+const apiDir = currentDir.replace('tests/api/math', '')
 const mainFile = require(apiDir + '/api/main.js')
 const chai = require('chai')
 const unirest = require('unirest')
@@ -13,40 +13,49 @@ describe('API testing', () => {
     unirest
       .get('http://127.0.0.1:7000/api/test')
       .end(result => {
-        expect(result.body)
+        var err = null
+        try {
+          expect(result.body)
           .to.have.property('message')
           .and.to.equal('API Testing here')
-        done()
+        } catch (error) {
+          err = error
+        }
+        done(err)
       })
   })
 
-  it('should OCR result specified', function (done) {
-    fs.readFile(
-      currentDir + '/clean_photo_test.jpg',
-      (err, data) => {
-
-        if (err) return done(err)
-
-        var options = {
-          data: new Buffer(data).toString('base64'),
-          lang: 'eng'
-        }
-
-        unirest
-          .post('http://127.0.0.1:7000/api/ocr')
-          .headers({'Accept': 'application/json', 'Content-Type': 'application/json'})
-          .send(options)
-          .end(result => {
-            console.log(result.body)
-            if(result.status == 500) return done(new Error(result.body))
-            expect(result.body)
-              .to.be.an('object')
-              .and.to.have.property('fileContent')
-            expect(result.body.fileContent)
-              .to.be.an('array')
-            done()
-          })
+  describe('Endpoints testing', () => {
+    it('should return solution for 1 + 1', function (done) {
+      const expression = {
+        line: '1+1'
       }
-    )
+      unirest
+      .post('http://127.0.0.1:7000/api/math/solve')
+      .headers({'Accept': 'application/json', 'Content-Type': 'application/json'})
+      .send(expression)
+      .end(result => {
+        var err = null
+        try {
+          expect(result.body)
+            .to.have.property('evaluation')
+          expect(result.body.evaluation)
+            .to.have.property('solveType', 'mathjs')
+          expect(result.body.evaluation)
+            .to.have.property('expression', '1+1')
+          expect(result.body.evaluation)
+            .to.have.property('query', '1+1')
+          expect(result.body.evaluation)
+            .to.have.property('ocrResult', null)
+          expect(result.body.evaluation)
+            .to.have.property('result', 2)
+          expect(result.body.evaluation)
+            .to.have.property('active', true)
+        } catch (e) {
+          err = e
+        }
+        done(err)
+      })
+    })
   })
 })
