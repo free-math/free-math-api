@@ -38,3 +38,4 @@ jspm_packages
 
 # private variables. :)
 /lib/private.config.js
+/temp/
