@@ -1,5 +1,6 @@
 const path = require('path')
 const currentDir = (path.resolve(__dirname) + '/')
+const apiTestDir = currentDir.replace('/ocr', '')
 const apiDir = currentDir.replace('tests/api/ocr', '')
 const mainFile = require(apiDir + '/api/main.js')
 const chai = require('chai')
@@ -22,7 +23,7 @@ describe('API testing', () => {
 
   it('should OCR result specified', function (done) {
     fs.readFile(
-      currentDir + '/clean_photo_test.jpg',
+      apiTestDir + '/clean_photo_test.jpg',
       (err, data) => {
 
         if (err) return done(err)
@@ -37,7 +38,6 @@ describe('API testing', () => {
           .headers({'Accept': 'application/json', 'Content-Type': 'application/json'})
           .send(options)
           .end(result => {
-            console.log(result.body)
             if(result.status == 500) return done(new Error(result.body))
             expect(result.body)
               .to.be.an('object')
