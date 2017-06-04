@@ -37,11 +37,13 @@ describe('API testing', () => {
           .headers({'Accept': 'application/json', 'Content-Type': 'application/json'})
           .send(options)
           .end(result => {
-            if(result.status == 500) return done(result.body)
+            console.log(result.body)
+            if(result.status == 500) return done(new Error(result.body))
             expect(result.body)
               .to.be.an('object')
               .and.to.have.property('fileContent')
-              .and.to.not.be.equal('')
+            expect(result.body.fileContent)
+              .to.be.an('array')
             done()
           })
       }
