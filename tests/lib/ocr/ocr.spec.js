@@ -60,6 +60,26 @@ describe('Testing Lib OCR module', () => {
           done(expect(err).to.be.ok)
         })
     }) // OK
+    it('Should return array with one element', function (done) {
+      this.timeout(5000)
+      var fileContent = '2x" -7x +3 = 0'
+      ocr
+        .getLines(fileContent)
+        .then(result => {
+          var err = null
+          try {
+            expect(result).to.be.an('array')
+            expect(result[0]).to.be.a('string').and.to.be.equal('2x" -7x +3 = 0')
+            expect(result).to.have.lengthOf(1)
+          } catch (error) {
+            err = error
+          }
+          done(err)
+        })
+        .catch(err => {
+          done(expect(err).to.be.ok)
+        })
+    }) // OK
     it('Should return error when no parameter', function (done) {
       this.timeout(5000)
       ocr
