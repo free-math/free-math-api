@@ -35,25 +35,26 @@ describe('API testing', () => {
       .headers({'Accept': 'application/json', 'Content-Type': 'application/json'})
       .send(expression)
       .end(result => {
+
+        const body = result.body
+        const eval = body.evaluation
+        const status = result.status
+
         var err = null
+
         try {
-          expect(result.body)
-            .to.have.property('evaluation')
-          expect(result.body.evaluation)
-            .to.have.property('solveType', 'mathjs')
-          expect(result.body.evaluation)
-            .to.have.property('expression', '1+1')
-          expect(result.body.evaluation)
-            .to.have.property('query', '1+1')
-          expect(result.body.evaluation)
-            .to.have.property('ocrResult', null)
-          expect(result.body.evaluation)
-            .to.have.property('result', 2)
-          expect(result.body.evaluation)
-            .to.have.property('active', true)
+          expect(status).to.be.equal(200)
+          expect(body).to.have.property('evaluation')
+          expect(eval).to.have.property('solveType', 'mathjs')
+          expect(eval).to.have.property('expression', '1+1')
+          expect(eval).to.have.property('query', '1+1')
+          expect(eval).to.have.property('ocrResult', null)
+          expect(eval).to.have.property('result', 2)
+          expect(eval).to.have.property('active', true)
         } catch (e) {
           err = e
         }
+
         done(err)
       })
     })
