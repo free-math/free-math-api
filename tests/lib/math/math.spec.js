@@ -199,22 +199,17 @@ describe('Testing Lib Math Module', () => {
       utils
         .buildUrl(mockOpts)
         .then(bUrl => {
-          wolframMock
-          .get('/query' + bUrl.query)
-          .reply(200, mockOpts.xmlMock)
-
-          math
-            .wolframCall(mockOpts.input)
-            .then(result => {
-              var err = null
-              expect(result.info.mock).to.be.equal('true')
-              try {
-              } catch (error) {
-                err = error
-              }
-              done(err)
-            })
-            .catch(err => done(err))
+          wolframMock.get('/query' + bUrl.query).reply(200, mockOpts.xmlMock)
+          return math.wolframCall(mockOpts.input)
+        })
+        .then(result => {
+          var err = null
+          expect(result.info.mock).to.be.equal('true')
+          try {
+          } catch (error) {
+            err = error
+          }
+          done(err)
         })
         .catch(err => done(err))
     })
