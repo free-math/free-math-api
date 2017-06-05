@@ -396,7 +396,7 @@ describe('Testing Lib Math Module', () => {
             expect(result.evaluation.solveType).to.be.equal('wolfram')
             expect(result.evaluation.expression).to.be.equal('7 * x + 2 = 12')
             expect(result.evaluation.query).to.be.equal('(7*x)+2=12')
-            expect(result.firstTime).to.be.not.ok
+            expect(result.firstTime).to.be.a('boolean')
           } catch (error) {
             mErr = error
           }
