@@ -6,9 +6,9 @@ fetch the resolve and save history of queries.
 
 
 ## Methods
-  * [getExpType](#getExpType)
-  * [mathJsSolve](#mathJsSolve)
-  * [wolframCall](#wolframCall)
+  * [getExpType](#getexptype)
+  * [mathJsSolve](#mathjssolve)
+  * [wolframCall](#wolframcall)
   * [evaluate](#evaluate)
   * [solve](#solve)
 
