@@ -269,7 +269,6 @@ describe('Testing Lib Math Module', () => {
         .then(result => {
           var err = null
           try {
-            // console.log(result)
             expect(result.solveType).to.be.equal('mathjs')
             expect(result.simplified).to.be.equal('10')
             expect(result.solution).to.be.equal(10)
@@ -306,6 +305,7 @@ describe('Testing Lib Math Module', () => {
         })
         .then(result => {
           var err = null
+          // console.log(result)
           try {
             expect(result.solveType).to.be.equal('wolfram')
             // expect(result.solution.inputPod.$.value).to.be.equal('7*x+2=12')
