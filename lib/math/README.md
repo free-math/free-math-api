@@ -364,7 +364,7 @@ Looks through the pods array and returns the one with the specifiec ID.
 const id = 'Result'
 
 math.wolframCall(query)
-  .then(wolframResult => math.getPodById(wolframResult.pod))
+  .then(wolframResult => math.getPodById(wolframResult.pod, id))
   .then(result => console.log(result))
   .catch(err => console.log(err))
 
