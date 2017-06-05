@@ -10,7 +10,8 @@ const router = express.Router()
 
 
 router.post('/ocr', (req, res) => {
-  var result, options = req.body
+  var result = null
+  const options = req.body
 
   if(!req.body.data || !req.body.lang) {
     res.status(500).send({
