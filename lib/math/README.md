@@ -398,3 +398,113 @@ The result would be:
     }
   }
 ```
+
+## solve
+
+#### Description:
+Wraps the [evaluate](#evaluate) method and adds an History log for all queries
+and solutions. Each new query is saved to the database and, if asked for again,
+the data will return the result, saving computing power and query requisition on
+to the Wolfram API.
+
+#### Params
+  * **input**: Object with expression and user ID
+
+| Property   | Value Type | Description                         |
+| ---------- |:---------- | ----------------------------------- |
+| query      | String     | Expression/equation to be evaluated |
+| user       | String     | String representation of userID     |
+
+#### Return
+  * **promise**: Resolves an object with the evaluated data.
+
+| Property   | Value Type | Description                                               |
+| ---------- |:---------- | --------------------------------------------------------- |
+| evaluation | Object     | Object with result. See bellow                            |
+| firstTime  | Boolean    | Flag that informs if the query was present of the Database|
+
+#### The evaluation Property
+| Property   | Value Type | Description                                                     |
+| ---------- |:---------- | --------------------------------------------------------------- |
+| user       | String     | String representation of userID                                 |
+| solveType  | String     | Type of solution used to find the result. 'mathjs' or 'wolfram' |
+| expression | String     | Original input query                                            |
+| query      | String     | Wolfram Query, if any                                           |
+| ocrResult  | String     | Original OCR'd string, if any                                   |
+| result     | Object     | Solution to the query                                           |
+| _id        | String     | ID of the History entry to the database                         |
+| active     | Boolean    | If this entry is deleted or not. Logical delete                 |
+| date       | String     | Timestamp of data-base entry                                    |
+
+### Example
+
+#### For a MathJS Solution
+```javascript
+
+const expressions = {
+  user: '68301f4aef1facb568301f4a',
+  query: 'sqrt(49) + 3'
+}
+
+math.solve(expressions)
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+```
+
+The result would be:
+
+```javascript
+  {
+    evaluation: {
+      __v: 0,
+      user: '68301f4aef1facb568301f4a',
+      solveType: 'mathjs',
+      expression: 'sqrt(49) + 3',
+      query: 'sqrt(49) + 3',
+      ocrResult: null,
+      result: 10,
+      _id: '593540035c405c31b1b42301',
+      active: true,
+      date: '2017-06-05T11:26:59.637Z'
+    },
+   firstTime: true
+  }
+```
+
+#### For a Wolfram Solution
+```javascript
+const input = {
+  query: '7 * x + 2 = 12',
+  user: '68301f4aef1facb568301f4a'
+}
+
+math.evaluate(expressions)
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+```
+
+The result would be:
+
+```javascript
+  {
+    evaluation: {
+      __v: 0,
+      user: '68301f4aef1facb568301f4a',
+      solveType: 'wolfram',
+      expression: '7 * x + 2 = 12',
+      query: '(7*x)+2=12',
+      ocrResult: null,
+      result: {
+        resultPod: [Object],
+        inputPod: [Object],
+        info: [Object]
+      },
+      _id: '593540035c405c31b1b42302',
+      active: true,
+      date: '2017-06-05T11:26:59.665Z '
+    },
+    firstTime: true }
+  }
+```
