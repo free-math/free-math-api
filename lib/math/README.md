@@ -343,7 +343,7 @@ The result would be:
 ## getPodById
 
 #### Description:
-Looks through the pods array and returns the one with the specifiec ID.
+Looks through the pods array and returns the one with the specifiec ID
 
 #### Params
   * **input**: Object with expression and user ID
