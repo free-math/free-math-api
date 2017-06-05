@@ -13,7 +13,7 @@ fetch the resolve and save history of queries.
   * [solve](#solve)
 
 
-### getExpType
+## getExpType
 
 #### Description:
 Checks if the expression is an equation or a simple math
@@ -24,14 +24,14 @@ to decide
   * **expression**: String of the equation/expression.
 
 | Property   | Value Type | Description                       |
-| -----------|:-----------| ----------------------------------|
+| ---------- |:---------- | --------------------------------- |
 | expression | String     | Input expression to be classified |
 
 #### Return
   * **promise**: Object with result data. See example for detail.
 
 | Property   | Value Type | Description                          |
-| -----------|:-----------| -------------------------------------|
+| ---------- |:---------- | ------------------------------------ |
 | isEq       | Boolean    | If the expression is an equation     |
 | expression | String     | Simplified and normalized expression |
 
@@ -42,7 +42,7 @@ const expression = 'x^2 + 7x +3 = 0'
 
 math.getExpType(expression)
   .then(result => console.log(result))
-  .then(err => console.log(err))
+  .catch(err => console.log(err))
 
 ```
 
@@ -59,7 +59,7 @@ Please note that the result expression is different from the original expression
 The MathJS module simplifies and normalizes the input, giving out a much nicer
 result expression.
 
-### mathJsSolve
+## mathJsSolve
 
 #### Description:
 Solves non-equation expressions.
@@ -68,7 +68,7 @@ Solves non-equation expressions.
   * **expressions**: Array of the expressions. Each expression should be a string.
 
 | Property   | Value Type | Description                       |
-| -----------|:-----------| ----------------------------------|
+| ---------- |:---------- | --------------------------------- |
 | expression | Array      | Input expression to be classified |
 
 #### Return
@@ -76,7 +76,7 @@ Solves non-equation expressions.
   structure
 
 | Property   | Value Type | Description                                                    |
-| -----------|:-----------| ---------------------------------------------------------------|
+| ---------- |:---------- | -------------------------------------------------------------- |
 | simplified | String     | Simplified expression. In this case, is the result as a String |
 | expression | String     | Input Expression                                               |
 | error      | String     | Error that occurred during solving of the expression           |
@@ -89,7 +89,7 @@ const expressions = ['sqrt(9)', '123+77']
 
 math.mathJsSolve(expressions)
   .then(result => console.log(result))
-  .then(err => console.log(err))
+  .catch(err => console.log(err))
 
 ```
 
@@ -113,7 +113,7 @@ The result would be:
 
 ```
 
-### wolframCall
+## wolframCall
 
 #### Description:
 Wraps promise over Wolfram Module.It needs input object to be validated beforehand.
@@ -124,7 +124,7 @@ The API is very complex and I will only outline a few essential aspects here.
   * **input**: Input expression to query Wolfram Api
 
 | Property   | Value Type  | Description                           |
-| -----------|:----------- | --------------------------------------|
+| ---------- |:----------- | ------------------------------------- |
 | expression | String      | Input expression to query Wolfram Api |
 
 #### Return
@@ -132,14 +132,14 @@ The API is very complex and I will only outline a few essential aspects here.
   from the Wolfram API. The *info* property is the attributes of the root XML node.
 
 | Property      | Value Type | Description                                |
-| ------------- |:-----------| -------------------------------------------|
+| ------------- |:---------- | ------------------------------------------ |
 | info          | Objects    | Attributes of that XML node.               |
 | pod           | String     | Solution pods                              |
 
 ## **Root Node Info:**
 
 | Property      | Value Type | Description                                |
-| ------------- |:-----------| -------------------------------------------|
+| ------------- |:---------- | ------------------------------------------ |
 | success       | String     | If query was successful                    |
 | error         | String     | If query had error                         |
 | datatypes     | String     |                                            |
@@ -182,7 +182,7 @@ const expression = '7 x + 2 = 12'
 
 math.wolframCall(expression)
   .then(result => console.log(result))
-  .then(err => console.log(err))
+  .catch(err => console.log(err))
 
 ```
 
@@ -200,11 +200,11 @@ The result would be:
       timing: '1.161',
       parsetiming: '0.246',
       parsetimedout: 'false',
-      recalculate: 'https://www3.wolframalpha.com/api/v2/recalc.jsp?id=MSPa389420h2f1581b2f648i00000d5eh9842ea4388b&s=6',
+      recalculate: 'RECALCULATE URL',
       id: 'MSPa389520h2f1581b2f648i000038c90a35e24h5b61',
       host: 'https://www3.wolframalpha.com',
       server: '6',
-      related: 'https://www3.wolframalpha.com/api/v2/relatedQueries.jsp?id=MSPa389620h2f1581b2f648i000038f2i0e69g467fa9&s=6',
+      related: 'RELATED URL',
       version: '2.6'
     },
     pod: {
@@ -223,7 +223,7 @@ The result would be:
             img: {
               '0': {
                 info: {
-                  src: 'https://www3.wolframalpha.com/Calculate/MSP/MSP389720h2f1581b2f648i000034ia7fe9di443fa5?MSPStoreType=image/gif&s=6',
+                  src: 'SOURCE URL',
                   alt: '7 x + 2 = 12',
                   title: '7 x + 2 = 12',
                   width: '79',
@@ -238,4 +238,163 @@ The result would be:
       '2': { info: [Object], subpod: [Object] },
       '3': { info: [Object], subpod: [Object], states: [Object] },
       '4': { info: [Object], subpod: [Object] } } }
+```
+
+## evaluate
+
+#### Description:
+Evaluates expression to see if it should be solved using MathJS or WolframAPI,
+and returns its result along with some other information and data.
+
+#### Params
+  * **input**: Object with expression and user ID
+
+| Property   | Value Type | Description                       |
+| ---------- |:---------- | --------------------------------- |
+| query      | String     | Expression/equation to be evaluated |
+| user       | String     | String representation of userID |
+
+#### Return
+  * **promise**: Resolves an object with the evaluated data
+
+| Property   | Value Type    | Description                                                     |
+| ---------- |:------------- | --------------------------------------------------------------- |
+| user       | String        | String representation of userID                                 |
+| query      | String        | Wolfram Query, if any                                           |
+| solution   | Number/Object | Solution to the expression                                      |
+| solveType  | String        | Type of solution used to find the result. 'mathjs' or 'wolfram' |
+| simplified | String        | Simplified expression.                                          |
+| error      | Object        | Error object                                                    |
+| expression | String        | Original input query                                            |
+
+### Example
+
+#### For a MathJS Solution
+```javascript
+const input = {
+  query: 'sqrt(49) + 3',
+  user: '68301f4aef1facb568301f4a'
+}
+
+math.evaluate(expressions)
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+```
+
+The result would be:
+
+```javascript
+  {
+    user: '68301f4aef1facb568301f4a',
+    query: '',
+    solution: 10,
+    solveType: 'mathjs',
+    simplified: '10',
+    error: null,
+    expression: 'sqrt(49) + 3'
+  }
+```
+
+#### For a Wolfram Solution
+```javascript
+const input = {
+  query: '7 * x + 2 = 12',
+  user: '68301f4aef1facb568301f4a'
+}
+
+math.evaluate(expressions)
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+```
+
+The result would be:
+
+```javascript
+  {
+    user: '68301f4aef1facb568301f4a',
+    query: '7 * x + 2 = 12',
+    solution: {
+      info: {
+        success: 'true',
+        error: 'false',
+        numpods: '5',
+        datatypes: '',
+        timedout: '',
+        timedoutpods: '',
+        timing: '1.161',
+        parsetiming: '0.246',
+        parsetimedout: 'false',
+        recalculate: 'RECALCULATE URL',
+        id: 'MSPa389520h2f1581b2f648i000038c90a35e24h5b61',
+        host: 'https://www3.wolframalpha.com',
+        server: '6',
+        related: 'RELATED URL',
+        version: '2.6'
+      },
+      inputPod: { info: [Object], subpod: [Object] },
+      resultPod: { info: [Object], subpod: [Object], states: [Object] }
+    },
+    solveType: 'wolfram'
+  }
+```
+
+## getPodById
+
+#### Description:
+Looks through the pods array and returns the one with the specifiec ID.
+
+#### Params
+  * **input**: Object with expression and user ID
+
+| Property   | Value Type | Description                           |
+| ---------- |:---------- | ------------------------------------- |
+| pods       | Array      | Array of pods from the wolfram result |
+| id         | String     | ID of the pod to look for             |
+
+#### Return
+  * **promise**: Resolves the pod object. Please refer to the [wolframCall](#wolframCall)
+
+
+### Example
+
+#### For a MathJS Solution
+```javascript
+const id = 'Result'
+
+math.wolframCall(query)
+  .then(wolframResult => math.getPodById(wolframResult.pod))
+  .then(result => console.log(result))
+  .catch(err => console.log(err))
+
+```
+
+The result would be:
+
+```javascript
+  {
+    info: {
+      title: 'Solution',
+      scanner: 'Reduce',
+      id: 'Solution',
+      position: '400',
+      error: 'false',
+      numsubpods: '1',
+      primary: 'true'
+    },
+    subpod: {
+      '0': {
+        info: [Object],
+        img: [Object],
+        plaintext: [Object]
+      }
+    },
+    states: {
+      '0': {
+        info: [Object],
+        state: [Object]
+      }
+    }
+  }
 ```
