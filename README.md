@@ -1,8 +1,8 @@
 # **Free-Math**
   Open-Source solution for mathematical computation with support for Optical Character Recognition
 
-[![Build Status](https://travis-ci.org/midyan/free-math.svg?branch=master)](https://travis-ci.org/midyan/free-math)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/midyan/free-math/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/free-math/free-math-api.svg?branch=master)](https://travis-ci.org/free-math/free-math-api)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/free-math/free-math-api/blob/master/LICENSE)
 
 # PLEASE NOTE
   This is still under construction. It's not even alpha. I will have a view-only Trello available soon so you all can see into my development process.
